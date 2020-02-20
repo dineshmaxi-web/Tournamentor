@@ -1,25 +1,25 @@
 html
   head
-    title Agri Product Detail
-    link(rel="stylesheet", href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css")
-    script(src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js")
-    script(src="//code.jquery.com/jquery-1.11.1.min.js")
+    title Tournament Detail
     link(rel="stylesheet", href="/detail/detail.css")
     link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css")
     link(rel="stylesheet", href="https://fonts.googleapis.com/css?family=Open+Sans:400,700")
     link(rel="stylesheet", href="https://fonts.googleapis.com/icon?family=Material+Icons")
     script(src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js")
     script(src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.js")
-    script(src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js")
+    link(rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css")
+    script(type='text/javascript', src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js")
+    script(type='text/javascript', src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js")
+    script(type='text/javascript', src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js")
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.js")
 
   body
-
     .container
       .card
         .container-fluid
           .wrapper.row
             .preview.col-md-6
-              a#letspace(href='/my/application')
+              a#letspace(href='/my/dashboard/posts')
                 i.fa.fa-arrow-left Back
               br
               .preview-pic.tab-content
@@ -33,27 +33,76 @@ html
               b.create Before :
                 p1  #{moment(application[0].created_at).fromNow()}
               h4.product-description #{application[0].description}
-              h4.price Entry Fee :`
+              h4.price Entry Fee :
                   i.fa.fa-inr
                     span #{application[0].entryfee}
               h4.price Start Date :
                   i.fa.fa-calendar
-                    span #{application[0].startdate}
+                    span #{("0" + (application[0].startdate.getMonth() + 1)).slice(-2) + "-" + ("0" + application[0].startdate.getDate()).slice(-2) +"-" + application[0].startdate.getFullYear()}
               h4.price End Date :
                   i.fa.fa-calendar
-                    span #{application[0].enddate}
+                    span #{("0" + (application[0].enddate.getMonth() + 1)).slice(-2) + "-" + ("0" + application[0].enddate.getDate()).slice(-2) +"-" + application[0].enddate.getFullYear()}
               h4.price City :
                   i.fa.fa-building
                     span #{application[0].city}
               br
-              button.action.add-to-cart.btn.btn-default.getcontact Apply
+              div
+                button.action.add-to-cart.btn.btn-default.apply Apply
+                button.action.add-to-cart.btn.btn-default.sponsor(data-toggle="modal" data-target="#myModal") Sponsor
               br
+          div.customer-logos    
+            each logo in application[0].sponsorship
+              div.slide 
+                img(src=logo.logo)
+                p#categ #{logo.category}
           center
-            iframe#gm(width="100%" height="50%",frameborder='0', style='border:0', src='https://www.google.com/maps/embed/v1/place?key=AIzaSyBzgEPx6cqn4xlfAivUYHuCxbefWWIlFs4&q='+application[0].lat+','+application[0].lng)
-          #mario-chat
-            .well-lg Comment Section
-            #chat-window
-                #output
-            button#send
-              i.fa.fa-paper-plane
-            input(type="text", placeholder="Message", id="message")
+            iframe#gm(width="100%" height="50%",frameborder='0', style='border:0', src='https://www.google.com/maps/embed/v1/place?key=AIzaSyBzgEPx6cqn4xlfAivUYHuCxbefWWIlFs4&q='+application[0].lat+','+application[0].lng)        
+          #myModal.modal
+            form(action = "/addsponsor", method = "POST")
+              .modal-dialog
+                .modal-content
+                  .modal-header
+                    h4.modal-title Sponsorship
+                      button.close(type='button' data-dismiss="modal") &times;
+                  .modal-body
+                    .form-group
+                      label(for='logo') Company Logo
+                      input#logo.form-control(type="url" name="logo" required)
+                      br
+                      label(for='category') Category
+                      select#sponsorship.form-control(name="category")
+                          option(value='Title Sponsor') Title Sponsor
+                          option(value='Award Sponsor') Award Sponsor
+                          option(value='Powered by') Powered by
+                          option(value='Brought to you by') Brought to you by
+                      input#id.form-control(type="text" name="id" style='display:none' value=application[0]._id)    
+                      br
+                      button.btn.btn-info(type='submit') Submit
+
+script.
+    $(document).ready(function(){
+
+        $('.customer-logos').slick({
+          slidesToShow: 4,
+          slidesToScroll: 1,
+          autoplay: true,
+          autoplaySpeed: 1000,
+          arrows: false,
+          dots: false,
+          centerMode: true,
+          pauseOnHover: false,
+          centerPadding: '40px',
+          responsive: [{
+            breakpoint: 768,
+            settings: {
+              slidesToShow: 4
+            }
+          }, {
+            breakpoint: 520,
+            settings: {
+              slidesToShow: 3
+            }
+          }]
+        });
+      });
+      

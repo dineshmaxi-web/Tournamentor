@@ -34,16 +34,16 @@ function verify(req,res,next){
   }
   else {
     {
-      res.redirect('/my/login');
+      res.redirect('/');
     }
   }
 }
 
-app.get('/',function(req,res){
-  res.sendFile(path.join(__dirname+'/public/splashscreen/splashscreen.html'));
-});
+// app.get('/',function(req,res){
+//   res.sendFile(path.join(__dirname+'/public/splashscreen/splashscreen.html'));
+// });
 
-app.get('/my/login',function(req,res){
+app.get('/',function(req,res){
   res.sendFile(path.join(__dirname+'/public/login/login.html'));
 });
 
@@ -82,30 +82,37 @@ app.post('/application/information',verify,function(req,res){
   newApplication.lat = req.body.lat;
   newApplication.lng = req.body.lng;
   newApplication.save(function(err,savedObject){
-      if(savedObject)
-      {
-        res.redirect('/my/dashboard/posts')
-      }
-      else {
-        res.send(err);
-      }
-    });
+    if(savedObject)
+    {
+      res.redirect('/my/dashboard/posts')
+    }
+    else {
+      res.send(err);
+    }
+  });
 });
 
-app.get('/my/application/detail/:id',verify,function(req,res){
+app.get('/my/application/detail/:id',function(req,res){
   application.find({_id: req.params.id},function(err, application){
-    console.log(application)
     res.render('details', {application : application , traderemail : req.user.email, username : req.user.username})
+  });
 });
+
+app.post("/addsponsor", verify,function(req,res){
+  application.findOneAndUpdate( { _id: req.body.id }, { $push: { sponsorship: {logo:req.body.logo, category : req.body.category}}},{"returnNewDocument": true},function(err, applicati){
+    application.find({_id: req.body.id},function(err, application){
+      res.render('details', {application : application , traderemail : req.user.email, username : req.user.username})
+    });
+  });
 });
 
 app.get('/get/applications',verify,function(req,res){
-      application.find({},function(err, application){
-        if(err)
-          res.send(err);
-        else
-          res.send(application);
-      });
+    application.find({},function(err, application){
+      if(err)
+        res.send(err);
+      else
+        res.send(application);
+    });
 });
 
 app.post('/yesupdate/:id/:updatedquantity/mail/',verify,function(req,res){
@@ -126,7 +133,6 @@ app.post('/noupdate/:id/:updatedquantity/mail/',verify,function(req,res){
 });
 
 app.get('/get/mail',verify,function(req,res){
-  console.log(req.user.username);
   if(req.user.username)
     {
      mailstore.find({hostname: req.user.username},function(err, mailstore){

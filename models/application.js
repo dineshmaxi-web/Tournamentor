@@ -16,7 +16,8 @@ var applicationSchema = mongoose.Schema({
   city : String,
   pincode : String,
   lat : String,
-  lng : String
+  lng : String,
+  sponsorship : [{id:String, logo: String, category: String}]
 });
 
 var application = mongoose.model('applications' , applicationSchema);
