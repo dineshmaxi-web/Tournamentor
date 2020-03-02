@@ -47,7 +47,7 @@ html
                     span #{application[0].city}
               br
               div
-                button.action.add-to-cart.btn.btn-default.apply Apply
+                button.action.add-to-cart.btn.btn-default.apply(data-toggle="modal" data-target="#myModalApply") Apply
                 button.action.add-to-cart.btn.btn-default.sponsor(data-toggle="modal" data-target="#myModal") Sponsor
               br
           div.customer-logos    
@@ -76,6 +76,30 @@ html
                           option(value='Powered by') Powered by
                           option(value='Brought to you by') Brought to you by
                       input#id.form-control(type="text" name="id" style='display:none' value=application[0]._id)    
+                      br
+                      button.btn.btn-info(type='submit') Submit
+          #myModalApply.modal
+            form(action = "/teamRegistration", method = "POST")
+              .modal-dialog
+                .modal-content
+                  .modal-header
+                    h4.modal-title Team Registration
+                      button.close(type='button' data-dismiss="modal") &times;
+                  .modal-body
+                    .form-group
+                      label(for='teamName') Team Members Image
+                      input#logo.form-control(type="url" name="teamName")
+                      br
+                      label(for='name') Team Name
+                      input#name.form-control(type="text" name="name" required)
+                      br
+                      label(for='spotRegistration') Spot Registration only &nbsp;
+                      input(type="checkbox" name="spotRegistration" required)
+                      input.form-control(type="text" name="pnumber" style='display:none' value=application[0].pnumber)    
+                      input.form-control(type="text" name="hostEmail" style='display:none' value=application[0].hostemail)    
+                      input.form-control(type="text" name="hostname" style='display:none' value=application[0].hostname)  
+                      input#id.form-control(type="text" name="id" style='display:none' value=application[0]._id)  
+                      br
                       br
                       button.btn.btn-info(type='submit') Submit
 

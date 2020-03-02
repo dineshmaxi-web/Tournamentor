@@ -68,7 +68,7 @@ app.post('/application/information',verify,function(req,res){
   newApplication.hostname = req.user.username;
   newApplication.groundimage = req.body.groundimage;
   newApplication.sportimage = req.body.sportimage;
-  newApplication.hostemail = req.user.hostemail;
+  newApplication.hostemail = req.user.email;
   newApplication.sportname = req.body.sportname.toLowerCase();
   newApplication.startdate = req.body.startdate;
   newApplication.enddate = req.body.enddate;
@@ -94,7 +94,7 @@ app.post('/application/information',verify,function(req,res){
 
 app.get('/my/application/detail/:id',function(req,res){
   application.find({_id: req.params.id},function(err, application){
-    res.render('details', {application : application , traderemail : req.user.email, username : req.user.username})
+    res.render('details', {application : application , registerEmail : req.user.email, registerUserName : req.user.username})
   });
 });
 
@@ -115,96 +115,84 @@ app.get('/get/applications',verify,function(req,res){
     });
 });
 
-app.post('/yesupdate/:id/:updatedquantity/mail/',verify,function(req,res){
+// app.post('/yesupdate/:id/:updatedquantity/mail/',verify,function(req,res){
 
-  application.findOneAndUpdate({_id: req.params.id},{$set:{pquantity:req.params.updatedquantity}},{"returnNewDocument": true},function(err,updated){
+//   application.findOneAndUpdate({_id: req.params.id},{$set:{pquantity:req.params.updatedquantity}},{"returnNewDocument": true},function(err,updated){
 
-  });
+//   });
 
-  mailstore.findOneAndDelete({applicationid: req.params.id},function(err, deleteditem){
-    res.redirect('/my/dashboard/posts')
-  });
-});
+//   mailstore.findOneAndDelete({applicationid: req.params.id},function(err, deleteditem){
+//     res.redirect('/my/dashboard/posts')
+//   });
+// });
 
-app.post('/noupdate/:id/:updatedquantity/mail/',verify,function(req,res){
-  mailstore.findOneAndDelete({applicationid: req.params.id},function(err, deleteditem){
-    res.redirect('/my/dashboard/posts');
-  });
-});
+// app.post('/noupdate/:id/:updatedquantity/mail/',verify,function(req,res){
+//   mailstore.findOneAndDelete({applicationid: req.params.id},function(err, deleteditem){
+//     res.redirect('/my/dashboard/posts');
+//   });
+// });
 
-app.get('/get/mail',verify,function(req,res){
-  if(req.user.username)
-    {
-     mailstore.find({hostname: req.user.username},function(err, mailstore){
-       res.send(mailstore);
-      if(err)
-        res.send("Nothing found.");
-      });
-    }
-  else{
-    res.send("You are not authenticated");
-  }
-});
+// app.get('/get/mail',verify,function(req,res){
+//   if(req.user.username)
+//     {
+//      mailstore.find({hostname: req.user.username},function(err, mailstore){
+//        res.send(mailstore);
+//       if(err)
+//         res.send("Nothing found.");
+//       });
+//     }
+//   else{
+//     res.send("You are not authenticated");
+//   }
+// });
 
-app.post('/mail/send',function(req,res){
-  var newMailStore = new mailstore();
-  newMailStore.hostname = req.body.postername;
-  newMailStore.applicationid = req.body.applicationid;
-  newMailStore.howmuch = req.body.howmuch;
-  newMailStore.pquantity = req.body.pquantity;
-  newMailStore.pqmeasure = req.body.pqmeasure;
-  newMailStore.mobilenumber = req.body.mobileno;
-  newMailStore.clickername = req.user.username;
+app.post('/teamRegistration',function(req,res){
+  console.log(req.body.hostEmail, req.user.email)
+//   var newMailStore = new mailstore();
+//   newMailStore.hostname = req.body.teamName;
+//   newMailStore.applicationid = req.body.registerEmail;
+//   newMailStore.howmuch = req.body.howmuch;
+//   newMailStore.pquantity = req.body.pquantity;
+//   newMailStore.pqmeasure = req.body.pqmeasure;
+//   newMailStore.mobilenumber = req.body.mobileno;
+//   newMailStore.clickername = req.user.username;
 
-  newMailStore.save(function(err,savedObject){
-      if(savedObject)
-      {
-        console.log(savedObject);
-      }
-      else {
-        res.send(err);
-      }
-    });
+//   newMailStore.save(function(err,savedObject){
+//       if(savedObject)
+//       {
+//         console.log(savedObject);
+//       }
+//       else {
+//         res.send(err);
+//       }
+//     });
 
   transporter = nodemailer.createTransport({
     service: 'Gmail',
     auth: {
       user: 'dineshozian@gmail.com',
-      pass: 'ozian111'
+      pass: 'indian@1234'
     }
   });
 
   mailOption = {
-    from: 'Website support <dineshozian@gmail.com>',
-    to: req.body.posteremail,
-    subject: req.body.subject,
-    html: '<p>Hello, <b>'+ req.body.postername+'</b>. How are you?. <b>'+req.user.username+'</b> would like to buy your <b>'+req.body.howmuch+' '+req.body.pqmeasure+' '+req.body.product+'</b>. Please, have a smooth relationship with him/her.</p>'+'<ul>'+'<li>Contact '+req.user.username+' to '+req.user.phonenumber+'</li></ul>'
+    from: 'Tournamentor <Member@tournamentor.com>',
+    to: req.body.hostEmail,
+    subject: "Regarding Team Registration",
+    html: '<p>Hello, <b>'+ req.body.hostname+'</b>. Hope you doing good. '+req.body.name+' team is willing to attend the tournament which is going to be organized by you. For more informations contact -> '+req.user.username +' : ' +req.user.phonenumber
   };
- transporter.sendMail(mailOption,function(info, err){
-   if(info){
-    console.log(info.message);
-   }
- });
-
- transporter = nodemailer.createTransport({
-   service: 'Gmail',
-   auth: {
-     user: 'dineshozian@gmail.com',
-     pass: 'ozian111'
-   }
- });
+ transporter.sendMail(mailOption);
 
  mailOption = {
-   from: 'Website support <dineshozian@gmail.com>',
-   to: req.body.clickeremail,
-   subject: req.body.subject,
-   html: '<p>Hello, <b>'+ req.user.username+'</b>. How are you?. I hope you are interested in buying the <b>'+req.body.howmuch+' '+req.body.pqmeasure+' '+req.body.product+'</b> from <b>'+req.body.postername+'</b>. Please, have a smooth relationship with him/her.</p>'+'<ul>'+'<li>Contact '+req.body.postername+' to '+req.body.mobileno+'</li></ul>'
+   from: 'Tournamentor <Member@tournamentor.com>',
+   to: req.user.email,
+   subject: "Regarding Team Registration",
+   html: '<p>Hello, <b>'+ req.user.username+'</b>. Hope you doing good. Team registration was done successfully. For more informations contact -> '+req.body.hostname+' : '+req.body.pnumber
  };
-transporter.sendMail(mailOption,function(info, err){
-  if(info){
-   console.log(info.message);
-  }
-});
+transporter.sendMail(mailOption);
+application.find({_id: req.body.id},function(err, application){
+    res.render('details', {application : application , traderemail : req.user.email, username : req.user.username})
+  });
 });
 
 app.get('/post/dashboard',verify,function(req,res){
@@ -260,7 +248,7 @@ app.post('/my/application/detail/:id/delete',verify,function(req,res){
 app.get('/account/logout',verify,function(req,res){
   req.session.destroy();
   req.logout();
-  res.redirect('/my/login');
+  res.redirect('/');
 });
 
 var server = app.listen(4000,function(){

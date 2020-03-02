@@ -14,9 +14,9 @@ $.ajax({
      }
      else
      {
+      $("#posts").html("");
      for(var i = 0 ; i < data.length ; i++)
      {
-      $("#posts").html("");
       $("#posts").append(
         "<div class='col-xs-6 col-lg-3 col-md-4 col-sm-6'"+
         "<div class='card'>"+
@@ -25,7 +25,7 @@ $.ajax({
         "<p class='list'>Host Name : "+data[i].hostname.capitalize()+"</p>"+
         "<p class='list'>Entry Fee : <i class='fa fa-inr' aria-hidden='true'></i>"+data[i].entryfee+"</p>"+
         "<p class='list'>Place : "+data[i].city+"</p>"+
-        "<a href=/my/application/detail/"+data[i]._id+" id='newpage'><button id='more-details'>Get details</button></p>"+
+        "<form action=/my/application/detail/"+data[i]._id+"/delete method='post'><button class='btn-danger moredet' > Delete <i class='fa fa-trash'></i></button></form>"+
         "<hr>"+
         "</div>"+
         "</div>"
